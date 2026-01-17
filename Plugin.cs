@@ -72,6 +72,7 @@ public class Plugin : BaseUnityPlugin
             {
                 foreach (var player in players)
                 {
+                    if (!player) continue;
                     Vector3 pos = player.transform.position;
                     float dist = Vector3.Distance(new Vector3(pos.x, 0, pos.z), new Vector3(center.x, 0, center.z));
                     if (dist > radius) player.RemoveHealth(0.25f);
@@ -79,7 +80,7 @@ public class Plugin : BaseUnityPlugin
             }
             // Shrink cylinder
             if (!SDCylinder) return;
-            if (radius > minRadius.Value) radius -= shrinkRate.Value;
+            if (radius > minRadius.Value) radius -= shrinkRate.Value / 60;
             SDCylinder.transform.localScale = new Vector3(radius * 2, 200f, radius * 2);
         }
     }
@@ -123,7 +124,6 @@ public class Plugin : BaseUnityPlugin
         startRadius = Config.Bind("general", "Death Zone Starting Radius", 100f, "zone is a cylinder, radius measured in arbitrary in game units");
         minRadius = Config.Bind("general", "Death Zone Minimum Radius", 10f, "zone is a cylinder, radius measured in arbitrary in game units");
         shrinkRate = Config.Bind("general", "Units / Second that the Zone Shrinks at", 5f, "zone is a cylinder, radius measured in arbitrary in game units");
-        shrinkRate.Value /= 60;
         secUntilSD = Config.Bind("general", "Seconds until Zone Appears", 5, "");
     }
 }

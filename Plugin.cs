@@ -2,7 +2,7 @@
 using ComputerysModdingUtilities;
 using UnityEngine;
 
-[assembly: StraftatMod(isVanillaCompatible: true)]
+[assembly: StraftatMod(isVanillaCompatible: false)]
 
 namespace straftat_sudden_death;
 
@@ -37,6 +37,9 @@ public class Plugin : BaseUnityPlugin
         ticksUntilSD = secUntilSD * 60;
         isSD = false;
         center = Vector3.zero;
+
+        if (SDCylinder) GameObject.Destroy(SDCylinder);
+
         FishNet.InstanceFinder.TimeManager.OnTick -= TickCountdown;
         FishNet.InstanceFinder.TimeManager.OnTick -= TickSD;
         FishNet.InstanceFinder.TimeManager.OnTick += TickCountdown;

@@ -1,0 +1,40 @@
+hook/event -> SDTimer class
+SDTimer class.reset statics -- SDTimer class.resub: resubscribe events to TimeManager
+SDTimer class.resub -> SDTimer class.countdownTick
+SDTimer class.resub -> SDTimer class.SDTick
+
+SDTimer class.resub: "" {
+    width: 1
+    height: 1
+}
+
+SDTimer class: {
+    reset statics: "" {
+    text: |`
+    **reset statics**
+    - cyl size
+    - timer
+    `|
+}
+
+    countdownTick: "" {
+        text: |`
+        **countdownTick**
+
+        decr timer, spawn cyl if time up
+        `|
+    }
+
+    SDTick: "" {
+        style: {
+            stroke-dash: 3
+        }
+        text: |`
+        **SDTick** (only run if countdown done)
+
+        - shrink cyl
+        - damage players sometimes
+        `|
+    }
+}
+

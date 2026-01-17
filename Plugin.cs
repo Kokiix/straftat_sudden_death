@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using ComputerysModdingUtilities;
-using HarmonyLib;
 using UnityEngine;
 
 [assembly: StraftatMod(isVanillaCompatible: true)]
@@ -74,7 +73,7 @@ public class Plugin : BaseUnityPlugin
             }
             // Shrink cylinder
             if (!SDCylinder) return;
-            if (radius > minRadius) radius -= shrinkRate * tm.TickDelta;
+            if (radius > minRadius) radius -= shrinkRate;
             SDCylinder.transform.localScale = new Vector3((float)radius * 2, 200f, (float)radius * 2);
         }
     }

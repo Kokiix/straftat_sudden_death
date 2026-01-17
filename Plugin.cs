@@ -23,19 +23,23 @@ public class Plugin : BaseUnityPlugin
 
     static int ticksUntilSD;
     static bool isSD = false;
+    static Vector3 center;
     
     // TODO: add to config file
     static double radius;
     static double startRadius = 100f;
     static double minRadius = 10f;
     static double shrinkRate = 5f;
-    static int startingTicksToSD = 500;
+    static int secUntilSD = 5;
 
     public static void ResetTimer()
     {
         radius = startRadius;
-        ticksUntilSD = startingTicksToSD;
+        ticksUntilSD = secUntilSD * 60;
         isSD = false;
+        center = Vector3.zero;
+        FishNet.InstanceFinder.TimeManager.OnTick -= TickCountdown;
+        FishNet.InstanceFinder.TimeManager.OnTick -= TickSD;
         FishNet.InstanceFinder.TimeManager.OnTick += TickCountdown;
         FishNet.InstanceFinder.TimeManager.OnTick += TickSD;
     }
@@ -46,13 +50,13 @@ public class Plugin : BaseUnityPlugin
         else if (!isSD)
         {
             isSD = true;
+            if (SDCylinder) GameObject.Destroy(SDCylinder);
             SpawnSDCylinder();
         }
     }
 
     static GameObject SDCylinder;
     static PlayerHealth[] players;
-    static Vector3 center;
     public static void TickSD()
     {
         if (isSD)
@@ -69,8 +73,9 @@ public class Plugin : BaseUnityPlugin
                 }
             }
             // Shrink cylinder
+            if (!SDCylinder) return;
             if (radius > minRadius) radius -= shrinkRate * tm.TickDelta;
-            SDCylinder.transform.localScale = new Vector3((float)radius * 2, 100f, (float)radius * 2);
+            SDCylinder.transform.localScale = new Vector3((float)radius * 2, 200f, (float)radius * 2);
         }
     }
 
@@ -79,16 +84,18 @@ public class Plugin : BaseUnityPlugin
         SDCylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
 
         // Set center at avg player position
-        Vector3 centerSum = Vector3.zero;
         players = GameObject.FindObjectsOfType<PlayerHealth>();
+        var c = SDCylinder.GetComponent<Collider>();
+        c.enabled = false;
+        c.isTrigger = false;
+
         foreach (var p in players)
         {
-            if (p != null && !p.isKilled) centerSum += p.transform.position;
+            if (p != null && !p.isKilled) center += p.transform.position;
         }
-        center = centerSum / players.Length;
+        center /= players.Length;
         SDCylinder.transform.position = new Vector3(center.x, 0, center.z);
 
-        GameObject.Destroy(SDCylinder.GetComponent<Collider>());
         var renderer = SDCylinder.GetComponent<MeshRenderer>();
         Material mat = renderer.material;
 

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using BepInEx;
+﻿using BepInEx;
 using ComputerysModdingUtilities;
 using HarmonyLib;
-using HarmonyLib.Tools;
 using UnityEngine;
 
 [assembly: StraftatMod(isVanillaCompatible: true)]
@@ -21,41 +18,21 @@ public class Plugin : BaseUnityPlugin
 
         // Scan ahead in this file and load in all patches
         new Harmony(PluginInfo.PLUGIN_GUID).PatchAll();
+
+        PauseManager.OnBeforeSpawn += SDTimer.ResetTimer;
     }
 
-    private static void OnSDStartBroadcastReceived(SDStartBroadcast broadcast)
-    {
-        Debug.Log($"Received SDStartBroadcast with center at {broadcast.center}");
-        SDTimer.BeginSD(broadcast.center);
-    }
-
-    [HarmonyPatch(typeof(GameManager))]
-    class Patch
-    {
-        private static bool broadcastRegistered = false;
-        [HarmonyPatch("ResetGame")]
-        [HarmonyPatch("ProgressToNextTake")]
-        [HarmonyPostfix]
-        static void SetSDCountdown()
-        {
+    // Subscribe frequently with injection bc i dont trust that my code subbed to BeforeSpawn event
+    // [HarmonyPatch(typeof(GameManager))]
+    // class Patch
+    // {
+    //     [HarmonyPatch("ResetGame")]
+    //     [HarmonyPatch("ProgressToNextTake")]
+    //     [HarmonyPostfix]
+    //     static void SubToBeforeSpawnEvent()
+    //     {
             
-            if (!broadcastRegistered)
-            {
-                FishNet.InstanceFinder.ClientManager.RegisterBroadcast<SDStartBroadcast>(OnSDStartBroadcastReceived);
-                broadcastRegistered = true;
-            }
-            SDTimer.StartCountdown(10);
-        }
-    }
-
-    [HarmonyPatch(typeof(RoundManager))]
-    class Patch2
-    {
-        [HarmonyPatch("NextRoundCall")]
-        [HarmonyPostfix]
-        static void SetSDCountdown()
-        {
-            SDTimer.StartCountdown(15);
-        }
-    }
+            
+    //     }
+    // }
 }

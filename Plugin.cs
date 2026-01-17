@@ -11,6 +11,8 @@ namespace straftat_sudden_death;
 public class Plugin : BaseUnityPlugin 
 {
     static BepInEx.Logging.ManualLogSource log;
+    static int ticksUntilSD;
+    static bool isSD = false;
 
     private void Awake()
     {
@@ -24,6 +26,26 @@ public class Plugin : BaseUnityPlugin
 
     public static void ResetTimer()
     {
-        log.LogFatal("take start?");
+        ticksUntilSD = 500;
+        FishNet.InstanceFinder.TimeManager.OnTick += tickCountdown;
+        FishNet.InstanceFinder.TimeManager.OnTick += tickSD;
+    }
+
+    public static void tickCountdown()
+    {
+        if (ticksUntilSD > 0) ticksUntilSD--;
+        else
+        {
+            // Spawn cylinder
+        }
+    }
+
+    public static void tickSD()
+    {
+        if (isSD)
+        {
+            // Damage players
+            // Shrink cylinder
+        }
     }
 }

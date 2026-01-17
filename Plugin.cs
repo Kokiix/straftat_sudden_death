@@ -85,6 +85,8 @@ public class Plugin : BaseUnityPlugin
         }
     }
 
+
+    static ConfigEntry<string> zoneColor;
     public static void SpawnSDCylinder()
     {
         SDCylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -108,22 +110,31 @@ public class Plugin : BaseUnityPlugin
         // IDK what shaders exist on what maps
         var defaultShader = Shader.Find("UI/Default");
         mat.shader = defaultShader ? defaultShader : Shader.Find("Unlit/Transparent");
-        mat.SetColor("_Color", new Color(1f, 0f, 0f, 0.3f));
+
+        // zone color
+        string[] colorStrings = zoneColor.Value.Split(", ");
+        float[] normalizedColors = [0f, 0f, 0f];
+        for (int i = 0; i < 3; i++) 
+        {
+            normalizedColors[i] = float.Parse(colorStrings[i]) / 255f;
+        }
+        mat.SetColor("_Color", new Color(normalizedColors[0], normalizedColors[1], normalizedColors[2], 1f));
         mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
 
-        // AI black magic for now :(
-        mat.SetFloat("_Mode", 3);
-        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        mat.SetInt("_ZWrite", 0);
-        mat.renderQueue = 3000;
+        // AI black magic for now to create transparency :(
+        // mat.SetFloat("_Mode", 3);
+        // mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        // mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        // mat.SetInt("_ZWrite", 0);
+        // mat.renderQueue = 3000;
     }
 
     public void ConfigInit()
     {
-        startRadius = Config.Bind("general", "Death Zone Starting Radius", 100f, "zone is a cylinder, radius measured in arbitrary in game units");
+        zoneColor = Config.Bind("general", "Death Zone Color", "110, 53, 45", "R, G, B");
+        startRadius = Config.Bind("general", "Death Zone Starting Radius", 37.5f, "zone is a cylinder, radius measured in arbitrary in game units");
         minRadius = Config.Bind("general", "Death Zone Minimum Radius", 10f, "zone is a cylinder, radius measured in arbitrary in game units");
-        shrinkRate = Config.Bind("general", "Units / Second that the Zone Shrinks at", 5f, "zone is a cylinder, radius measured in arbitrary in game units");
-        secUntilSD = Config.Bind("general", "Seconds until Zone Appears", 5, "");
+        shrinkRate = Config.Bind("general", "Units / Second that the Zone Shrinks at", 1f, "zone is a cylinder, radius measured in arbitrary in game units");
+        secUntilSD = Config.Bind("general", "Seconds until Zone Appears", 45, "");
     }
 }

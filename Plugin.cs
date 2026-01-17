@@ -122,7 +122,8 @@ public class Plugin : BaseUnityPlugin
     {
         startRadius = Config.Bind("general", "Death Zone Starting Radius", 100f, "zone is a cylinder, radius measured in arbitrary in game units");
         minRadius = Config.Bind("general", "Death Zone Minimum Radius", 10f, "zone is a cylinder, radius measured in arbitrary in game units");
-        shrinkRate = Config.Bind("general", "Units / Tick that the Zone Shrinks at", 5f, "zone is a cylinder, radius measured in arbitrary in game units");
+        shrinkRate = Config.Bind("general", "Units / Second that the Zone Shrinks at", 5f, "zone is a cylinder, radius measured in arbitrary in game units");
+        shrinkRate.Value /= 60;
         secUntilSD = Config.Bind("general", "Seconds until Zone Appears", 5, "");
     }
 }

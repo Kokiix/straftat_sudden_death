@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using ComputerysModdingUtilities;
 using UnityEngine;
 
@@ -13,8 +14,10 @@ public class Plugin : BaseUnityPlugin
     private void Awake()
     {
         // Standard for every mod -----------------------
+        string nonLoadBearingColonThree = ":3";
         gameObject.hideFlags = HideFlags.HideAndDontSave;
         log = Logger;
+        ConfigInit();
         // ----------------------------------------------
 
         PauseManager.OnBeforeSpawn += ResetTimer;
@@ -25,16 +28,16 @@ public class Plugin : BaseUnityPlugin
     static Vector3 center;
     
     // TODO: add to config file
-    static double radius;
-    static double startRadius = 100f;
-    static double minRadius = 10f;
-    static double shrinkRate = 5f;
-    static int secUntilSD = 5;
+    static float radius;
+    static ConfigEntry<float> startRadius;
+    static ConfigEntry<float> minRadius;
+    static ConfigEntry<float> shrinkRate;
+    static ConfigEntry<int> secUntilSD;
 
     public static void ResetTimer()
     {
-        radius = startRadius;
-        ticksUntilSD = secUntilSD * 60;
+        radius = startRadius.Value;
+        ticksUntilSD = secUntilSD.Value * 60;
         isSD = false;
         center = Vector3.zero;
 
@@ -70,14 +73,14 @@ public class Plugin : BaseUnityPlugin
                 foreach (var player in players)
                 {
                     Vector3 pos = player.transform.position;
-                    double dist = Vector3.Distance(new Vector3(pos.x, 0, pos.z), new Vector3(center.x, 0, center.z));
+                    float dist = Vector3.Distance(new Vector3(pos.x, 0, pos.z), new Vector3(center.x, 0, center.z));
                     if (dist > radius) player.RemoveHealth(0.25f);
                 }
             }
             // Shrink cylinder
             if (!SDCylinder) return;
-            if (radius > minRadius) radius -= shrinkRate;
-            SDCylinder.transform.localScale = new Vector3((float)radius * 2, 200f, (float)radius * 2);
+            if (radius > minRadius.Value) radius -= shrinkRate.Value;
+            SDCylinder.transform.localScale = new Vector3(radius * 2, 200f, radius * 2);
         }
     }
 
@@ -113,5 +116,13 @@ public class Plugin : BaseUnityPlugin
         mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
         mat.SetInt("_ZWrite", 0);
         mat.renderQueue = 3000;
+    }
+
+    public void ConfigInit()
+    {
+        startRadius = Config.Bind("general", "Death Zone Starting Radius", 100f, "zone is a cylinder, radius measured in arbitrary in game units");
+        minRadius = Config.Bind("general", "Death Zone Minimum Radius", 10f, "zone is a cylinder, radius measured in arbitrary in game units");
+        shrinkRate = Config.Bind("general", "Units / Tick that the Zone Shrinks at", 5f, "zone is a cylinder, radius measured in arbitrary in game units");
+        secUntilSD = Config.Bind("general", "Seconds until Zone Appears", 5, "");
     }
 }

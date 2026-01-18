@@ -1,3 +1,5 @@
 bin/
 obj/
 arch.*
+*.sln
+.thunderstore/sudden_death.dll

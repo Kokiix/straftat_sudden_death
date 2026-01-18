@@ -62,6 +62,7 @@ public class Plugin : BaseUnityPlugin
 
     static GameObject SDCylinder;
     static PlayerHealth[] players;
+    static ConfigEntry<float> damagePerSec;
     public static void TickSD()
     {
         if (isSD)
@@ -75,7 +76,7 @@ public class Plugin : BaseUnityPlugin
                     if (!player) continue;
                     Vector3 pos = player.transform.position;
                     float dist = Vector3.Distance(new Vector3(pos.x, 0, pos.z), new Vector3(center.x, 0, center.z));
-                    if (dist > radius) player.RemoveHealth(0.25f);
+                    if (dist > radius) player.RemoveHealth(damagePerSec.Value / 25f);
                 }
             }
             // Shrink cylinder
@@ -136,5 +137,6 @@ public class Plugin : BaseUnityPlugin
         minRadius = Config.Bind("general", "Death Zone Minimum Radius", 10f, "zone is a cylinder, radius measured in arbitrary in game units");
         shrinkRate = Config.Bind("general", "Units / Second that the Zone Shrinks at", 1f, "zone is a cylinder, radius measured in arbitrary in game units");
         secUntilSD = Config.Bind("general", "Seconds until Zone Appears", 45, "");
+        damagePerSec = Config.Bind("general", "Damage per Second while in Zone", 10f, "");
     }
 }

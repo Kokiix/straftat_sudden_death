@@ -45,5 +45,4 @@
   <Target Name="CopyDllToGame" AfterTargets="PostBuildEvent">
     <Copy SourceFiles="$(TargetDir)$(TargetName).dll" DestinationFolder="D:\Program Files\Gale\data\straftat\profiles\Default\BepInEx\plugins\sudden-death" />
   </Target>
-
 </Project>

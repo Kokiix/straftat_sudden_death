@@ -1,6 +1,6 @@
 # Sudden Death
 
-![demo GIF](demo.gif)
+![demo GIF](https://files.catbox.moe/temsyw.gif)
 
 basically just the fornite storm
 

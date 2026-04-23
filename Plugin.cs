@@ -27,12 +27,21 @@ public class Plugin : BaseUnityPlugin
     static bool isSD = false;
     static Vector3 center;
     
-    // TODO: add to config file
     static float radius;
     static ConfigEntry<float> startRadius;
     static ConfigEntry<float> minRadius;
     static ConfigEntry<float> shrinkRate;
     static ConfigEntry<int> secUntilSD;
+    
+    public void ConfigInit()
+    {
+        zoneColor = Config.Bind("general", "Death Zone Color", "110, 53, 45", "R, G, B");
+        startRadius = Config.Bind("general", "Death Zone Starting Radius", 37.5f, "zone is a cylinder, radius measured in arbitrary in game units");
+        minRadius = Config.Bind("general", "Death Zone Minimum Radius", 10f, "zone is a cylinder, radius measured in arbitrary in game units");
+        shrinkRate = Config.Bind("general", "Units / Second that the Zone Shrinks at", 1f, "zone is a cylinder, radius measured in arbitrary in game units");
+        secUntilSD = Config.Bind("general", "Seconds until Zone Appears", 45, "");
+        damagePerSec = Config.Bind("general", "Damage per Second while in Zone", 10f, "");
+    }
 
     public static void ResetTimer()
     {
@@ -130,13 +139,4 @@ public class Plugin : BaseUnityPlugin
         // mat.renderQueue = 3000;
     }
 
-    public void ConfigInit()
-    {
-        zoneColor = Config.Bind("general", "Death Zone Color", "110, 53, 45", "R, G, B");
-        startRadius = Config.Bind("general", "Death Zone Starting Radius", 37.5f, "zone is a cylinder, radius measured in arbitrary in game units");
-        minRadius = Config.Bind("general", "Death Zone Minimum Radius", 10f, "zone is a cylinder, radius measured in arbitrary in game units");
-        shrinkRate = Config.Bind("general", "Units / Second that the Zone Shrinks at", 1f, "zone is a cylinder, radius measured in arbitrary in game units");
-        secUntilSD = Config.Bind("general", "Seconds until Zone Appears", 45, "");
-        damagePerSec = Config.Bind("general", "Damage per Second while in Zone", 10f, "");
-    }
 }

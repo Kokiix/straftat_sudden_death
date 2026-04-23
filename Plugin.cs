@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Configuration;
 using ComputerysModdingUtilities;
 using UnityEngine;
@@ -32,7 +32,8 @@ public class Plugin : BaseUnityPlugin
     static ConfigEntry<float> minRadius;
     static ConfigEntry<float> shrinkRate;
     static ConfigEntry<int> secUntilSD;
-    
+    static ConfigEntry<float> zoneAlpha;
+
     public void ConfigInit()
     {
         zoneColor = Config.Bind("general", "Death Zone Color", "110, 53, 45", "R, G, B");
@@ -41,6 +42,7 @@ public class Plugin : BaseUnityPlugin
         shrinkRate = Config.Bind("general", "Units / Second that the Zone Shrinks at", 1f, "zone is a cylinder, radius measured in arbitrary in game units");
         secUntilSD = Config.Bind("general", "Seconds until Zone Appears", 45, "");
         damagePerSec = Config.Bind("general", "Damage per Second while in Zone", 10f, "");
+        zoneAlpha = Config.Bind("general", "Death Zone Transparency", 0.5f, "Transparency of the zone (0.0 to 1.0)");
     }
 
     public static void ResetTimer()
@@ -100,13 +102,10 @@ public class Plugin : BaseUnityPlugin
     public static void SpawnSDCylinder()
     {
         SDCylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        SDCylinder.GetComponent<Collider>().enabled = false;
 
         // Set center at avg player position
         players = GameObject.FindObjectsOfType<PlayerHealth>();
-        var c = SDCylinder.GetComponent<Collider>();
-        c.enabled = false;
-        c.isTrigger = false;
-
         foreach (var p in players)
         {
             if (p != null && !p.isKilled) center += p.transform.position;
@@ -114,29 +113,19 @@ public class Plugin : BaseUnityPlugin
         center /= players.Length;
         SDCylinder.transform.position = new Vector3(center.x, 0, center.z);
 
-        var renderer = SDCylinder.GetComponent<MeshRenderer>();
-        Material mat = renderer.material;
+        var mat = SDCylinder.GetComponent<MeshRenderer>().material;
+        mat.shader = Shader.Find("UI/Default");
 
-        // IDK what shaders exist on what maps
-        var defaultShader = Shader.Find("UI/Default");
-        mat.shader = defaultShader ? defaultShader : Shader.Find("Unlit/Transparent");
-
-        // zone color
-        string[] colorStrings = zoneColor.Value.Split(", ");
-        float[] normalizedColors = [0f, 0f, 0f];
-        for (int i = 0; i < 3; i++) 
-        {
-            normalizedColors[i] = float.Parse(colorStrings[i]) / 255f;
-        }
-        mat.SetColor("_Color", new Color(normalizedColors[0], normalizedColors[1], normalizedColors[2], 1f));
-        mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
-
-        // AI black magic for now to create transparency :(
-        // mat.SetFloat("_Mode", 3);
-        // mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        // mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        // mat.SetInt("_ZWrite", 0);
-        // mat.renderQueue = 3000;
+        string[] rgb = zoneColor.Value.Split(", ");
+        Color color = new (
+            float.Parse(rgb[0]) / 255f, 
+            float.Parse(rgb[1]) / 255f, 
+            float.Parse(rgb[2]) / 255f, 
+            zoneAlpha.Value
+        );
+        
+        mat.SetColor("_Color", color);
+        mat.SetInt("_Cull", 0);
     }
 
 }

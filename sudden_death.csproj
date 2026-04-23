@@ -26,23 +26,23 @@
     <PackageReference Include="UnityEngine.Modules" Version="2021.3.16" IncludeAssets="compile" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(GameDir)' == ''">
-    <GameDir>C:\Program Files (x86)\Steam\steamapps\common\STRAFTAT\STRAFTAT_Data\Managed</GameDir>
+  <PropertyGroup Condition="'$(GameDLLDir)' == ''">
+    <GameDLLDir>D:\SteamLibrary\steamapps\common\STRAFTAT\STRAFTAT_Data\Managed</GameDLLDir>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>$(GameDir)\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(GameDLLDir)\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="ComputerysModdingUtilities">
-      <HintPath>$(GameDir)\ComputerysModdingUtilities.dll</HintPath>
+      <HintPath>$(GameDLLDir)\ComputerysModdingUtilities.dll</HintPath>
     </Reference>
     <Reference Include="FishNet.Runtime">
-      <HintPath>$(GameDir)\FishNet.Runtime.dll</HintPath>
+      <HintPath>$(GameDLLDir)\FishNet.Runtime.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <Target Name="CopyDllToGame" AfterTargets="PostBuildEvent">
-    <Copy SourceFiles="$(TargetDir)$(TargetName).dll" DestinationFolder="D:\Program Files\Gale\data\straftat\profiles\Default\BepInEx\plugins\sudden-death" />
+    <Copy SourceFiles="$(TargetDir)$(TargetName).dll" DestinationFolder="C:\Users\koki\AppData\Roaming\com.kesomannen.gale\straftat\profiles\Default\BepInEx\plugins\koki-Sudden_Death" />
   </Target>
 </Project>
